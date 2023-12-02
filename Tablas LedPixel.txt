@@ -1,0 +1,137 @@
+create table roles(
+idRol int AUTO_INCREMENT PRIMARY KEY,
+NombreRol VARCHAR (50),
+CodRol VARCHAR (3)
+)
+CREATE TABLE empleados(
+idEmp int AUTO_INCREMENT PRIMARY KEY,
+NombreEmp varchar (50),
+ApellidoEmp varchar (50),
+ciEmp varchar (50),
+CorreoEmp varchar (50),
+Usuario varchar (10),
+Contrasenia varchar (10),
+idRol int,
+Sueldo FLOAT,
+FOREIGN KEY (idRol) REFERENCES roles(idRol)
+)
+create table almacen(
+idObj int AUTO_INCREMENT PRIMARY KEY,
+NombreObj varchar (30),
+StockObj int
+)
+create table ventas(
+idVen int AUTO_INCREMENT PRIMARY KEY,
+idObjVen int,
+ctdVen int,
+idEmp int,
+fecha date,
+FOREIGN KEY (idObjVen) REFERENCES almacen(idObj),
+FOREIGN KEY (idEmp) REFERENCES empleados(idEmp)
+)
+create table rentas(
+idRen int AUTO_INCREMENT PRIMARY KEY,
+idObjRen int,
+ctdRen int,
+idEmp int,
+Monto float,
+fechaEntrega date,
+fechaDev date,
+NombreCliR VARCHAR (100),
+Ci VARCHAR (30),
+Telefono VARCHAR(30),
+FOREIGN KEY (idObjRen) REFERENCES almacen(idObj),
+FOREIGN KEY (idEmp) REFERENCES empleados(idEmp)
+)
+create table pedidos(
+idPedido int AUTO_INCREMENT PRIMARY KEY,
+NombreCli VARCHAR (100),
+CiCli VARCHAR(50),
+TelefonoCli VARCHAR (20),
+idEmp int,
+idObj int,
+ctdPed int,
+Pago int,
+FechaEntrega date,
+FOREIGN KEY (idObj) REFERENCES almacen(idObj),
+FOREIGN KEY (idEmp) REFERENCES empleados(idEmp)
+)
+create table proveedores(
+idProv int AUTO_INCREMENT PRIMARY KEY,
+NombreProv VARCHAR (30),
+Telefono VARCHAR (30),
+Direccion VARCHAR(30)
+)
+create table compras (
+idCompra int AUTO_INCREMENT PRIMARY KEY,
+DescCompra VARCHAR (30),
+ctdCompra int,
+idProv int,
+Monto float,
+FechaCompra DATE,
+estado varchar (10),
+FOREIGN KEY (idProv) REFERENCES proveedores(idProv)
+)
+create table inventario (
+idInv int AUTO_INCREMENT PRIMARY KEY,
+ObjInv VARCHAR (30),
+CantInv int,
+rolInv int,
+FOREIGN KEY (rolInv) REFERENCES RolInventario(idRI)
+)
+create table RolInventario(
+idRI int AUTO_INCREMENT PRIMARY KEY,
+NRinv varchar (30),
+CodInv varchar (3)
+)
+INSERT INTO roles (NombreRol,CodRol)VALUES 
+('Administrador','ADM'),
+('Vendedor','VEN'),
+('Fabricante','FAB'),
+('Limpieza','LIM');
+INSERT INTO empleados (NombreEmp,ApellidoEmp,ciEmp,CorreoEmp,Usuario,Contrasenia,idRol,Sueldo) VALUES
+('Noe Elmer','Quispe Lipa','9123121','noe@gmail.com','noeadm01','123456',1,5500.50),
+('Ekko','Valde Rosa','831231','ekko@gmail.com','ekkofab01','321321',3,3500.00),
+('Kayn','Shinde','82131-A','kayn@gmail.com','kaynfab01','123451',2,4000.00);
+
+insert INTO almacen (NombreObj,StockObj)VALUES
+('Panel Led 200',30),
+('Panel Led 150',20),
+('Panel Led Lateral',10),
+('Cuadro Led',10),
+('Plataforma led',8);
+
+INSERT INTO ventas (idObjVen,ctdVen,idEmp,fecha)VALUES
+(1,4,3,'2023-07-01'),
+(2,4,3,'2023-06-11');
+INSERT INTO rentas (idObjRen,ctdRen,idEmp,Monto,fechaEntrega,FechaDev,NombreCliR,Ci,Telefono)VALUES
+(1,4,3,1500,'2023-07-12','2023-07-14','Tomas Diaz','2341245','2342012');
+
+INSERT INTO proveedores (NombreProv,Telefono,Direccion) VALUES
+('LedSistem','+2310312341','LA PAZ-EL ALTO'),
+('Carpintenria','6972131','LA PAZ-Chijarap');
+
+INSERT INTO compras (DescCompra,CtdCompra,idProv,Monto,FechaCompra,Estado)VALUES
+('marcos de 200Leds',20,2,500,'2023-06-12','Por entregar')
+
+INSERT INTO pedidos (NombreCli,CiCli,TelefonoCli,idEmp,idObj,ctdPed,Pago,FechaEntrega)VALUES
+('Sergio Perez','2321931-A','6731812',3,3,4,2500,'2023-07-31')
+
+insert into rolinventario (NRinv,CodInv) VALUES
+('Fabrica','Fab'),
+('Oficina','Ofc'),
+('Limpieza','lim')
+
+INSERT INTO inventario (ObjInv,CanInv,rolInv) VALUES
+('Marcos',10,1),
+('Tapa Trasera',20,1),
+('Correctora',1,1),
+('Escoba',2,3),
+('Laptop',1,2)
+
+SELECT e.NombreEmp,e.ApellidoEmp,e.ciEmp,e.CorreoEmp,e.Usuario,r.NombreRol,e.Sueldo FROM empleados e JOIN roles r on e.idRol = r.idRol;
+SELECT p.NombreCli,p.CiCli,p.TelefonoCli,e.NombreEmp,e.ApellidoEmp,a.NombreObj,p.ctdPed,p.Pago,.p.FechaEntrega from pedidos p
+JOIN empleados e on p.idEmp= e.idEmp
+JOIN almacen a on p.idObj = a.idObj
+  
+SELECT i.idInv,i.ObjInv,CantInv,r.NRinv FROM inventario i JOIN rolinventario r on i.rolInv = r.idRI where CodInv = "FAB";
